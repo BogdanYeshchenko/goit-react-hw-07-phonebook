@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { nanoid } from 'nanoid';
+
 import css from './ContactForm.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContacts } from 'redux/phoneBook/phoneBookSlice';
+// import { addContacts } from 'redux/phoneBook/phoneBookSlice';
 import { toast } from 'react-toastify';
+import { addContact } from 'redux/operations/operations';
 
 export const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNamber] = useState('');
-  const contacts = useSelector(state => state.phoneBook.contacts);
+  const contacts = useSelector(state => state.phoneBook.contacts.items);
 
   const dispatch = useDispatch();
 
@@ -18,11 +19,9 @@ export const ContactForm = () => {
       case 'name':
         setName(e.target.value);
         break;
-
       case 'number':
         setNamber(e.target.value);
         break;
-
       default:
         return;
     }
@@ -30,8 +29,8 @@ export const ContactForm = () => {
 
   const onFormSabmit = e => {
     e.preventDefault();
+    const newContact = { name: name, phone: number };
 
-    const contact = { id: nanoid(), name: name, number: number };
     const isNewContactNew = contacts.find(
       el => el.name.toLowerCase() === name.toLowerCase()
     );
@@ -39,9 +38,7 @@ export const ContactForm = () => {
       toast.warn(`${name} is already in contacts.`, {
         theme: 'dark',
       });
-
-    isNewContactNew ? notify() : dispatch(addContacts(contact));
-
+    isNewContactNew ? notify() : dispatch(addContact(newContact));
     setName('');
     setNamber('');
   };

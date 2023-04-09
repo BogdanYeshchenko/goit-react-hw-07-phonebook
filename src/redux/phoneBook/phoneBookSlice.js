@@ -1,28 +1,41 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { fetchContacts } from 'redux/operations/operations';
 
-const initialPhoneBookState = {
-  contacts: [],
+const { createSlice } = require('@reduxjs/toolkit');
+
+const initialState = {
+  contacts: {
+    items: [],
+    isLoading: false,
+    error: null,
+  },
   filter: '',
 };
 
-const phoneBookSlice = createSlice({
-  name: 'phonebook',
-  initialState: initialPhoneBookState,
+const contactsSlice = createSlice({
+  name: 'phoneBook',
+  initialState,
   reducers: {
-    addContacts(state, { payload }) {
-      state.contacts.push(payload);
-    },
     chengeFilter(state, { payload }) {
       state.filter = payload;
     },
-    deleteContact(state, { payload }) {
-      state.contacts = state.contacts.filter(el => el.id !== payload);
+  },
+
+  extraReducers: {
+    [fetchContacts.pending](state) {
+      state.contacts.isLoading = true;
+    },
+    [fetchContacts.fulfilled](state, { payload }) {
+      state.contacts.isLoading = false;
+      state.contacts.error = null;
+      state.contacts.items = payload;
+    },
+
+    [fetchContacts.rejected](state, { payload }) {
+      state.contacts.isLoading = false;
+      state.contacts.error = payload;
     },
   },
 });
 
-// Генератори екшенів
-export const { addContacts, chengeFilter, deleteContact } =
-  phoneBookSlice.actions;
-// Редюсер слайсу
-export default phoneBookSlice.reducer;
+export const { chengeFilter } = contactsSlice.actions;
+export default contactsSlice.reducer;

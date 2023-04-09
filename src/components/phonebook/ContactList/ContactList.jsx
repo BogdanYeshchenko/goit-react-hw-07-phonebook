@@ -1,13 +1,21 @@
-import { deleteContact } from 'redux/phoneBook/phoneBookSlice';
+import { useEffect } from 'react';
 import css from './ContactList.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { deleteContact, fetchContacts } from 'redux/operations/operations';
+import { BeatLoader } from 'react-spinners';
 
 export const ContactList = () => {
   const dispatch = useDispatch();
 
-  const contacts = useSelector(store => store.phoneBook.contacts);
+  const contacts = useSelector(state => state.phoneBook.contacts.items);
+  const isLoading = useSelector(state => state.phoneBook.contacts.isLoading);
   const filter = useSelector(state => state.phoneBook.filter);
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
   const filteredContscts = contacts.filter(el =>
     el.name.toLowerCase().includes(filter.toLowerCase())
   );
@@ -17,18 +25,19 @@ export const ContactList = () => {
       toast.warn(`${name} was delete.`, {
         theme: 'dark',
       });
-
     notify();
     dispatch(deleteContact(id));
   }
 
-  return (
+  return isLoading ? (
+    <BeatLoader />
+  ) : (
     <ul className={css.contactList}>
       {filteredContscts.map(contact => {
-        const { id, name, number } = contact;
+        const { id, name, phone } = contact;
         return (
           <li key={id} className={css.contact}>
-            {name}: {number}{' '}
+            {name}: {phone}{' '}
             <button
               className="btn btn-dark"
               type="button"
