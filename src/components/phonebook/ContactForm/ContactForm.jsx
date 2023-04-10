@@ -4,7 +4,7 @@ import css from './ContactForm.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 // import { addContacts } from 'redux/phoneBook/phoneBookSlice';
 import { toast } from 'react-toastify';
-import { addContact } from 'redux/operations/operations';
+import { addContact, fetchContacts } from 'redux/operations/operations';
 
 export const ContactForm = () => {
   const [name, setName] = useState('');
@@ -39,6 +39,7 @@ export const ContactForm = () => {
         theme: 'dark',
       });
     isNewContactNew ? notify() : dispatch(addContact(newContact));
+
     setName('');
     setNamber('');
   };
